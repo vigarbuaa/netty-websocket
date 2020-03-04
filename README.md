@@ -15,7 +15,8 @@ you can use the script `banchmark.py` in command line.
 https://mengkang.net/demo/websocket/2.html
 
 ## 待加入特性
-   - 检查，报文只接收文本，且必须为json
+   - 检查，http只接收upgrade请求  done
+   - 检查，websocket报文只接收文本，且必须为json
    - 根据报文的type字段，再次区别不同的handler
    - 利用netty中的schedule，定时向各分系统推送
    - 做一个输送系统模拟器，后续做自检用
