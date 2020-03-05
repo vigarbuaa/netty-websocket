@@ -4,8 +4,12 @@ import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -29,17 +33,29 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
+import net.mengkang.cmd.type.Command;
+import net.mengkang.entity.Packet;
+import net.mengkang.handler.SubscribeHandler;
+import net.mengkang.handler.UnSubscribeHandler;
 
+//@ChannelHandler.Sharable
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
-    protected static final InternalLogger logger = InternalLoggerFactory.getInstance(WebSocketServerHandshaker.class);
+    protected static final InternalLogger logger = InternalLoggerFactory.getInstance(WebSocketServerHandler.class);
 
 	// websocket 服务的 uri
 	private static final String WEBSOCKET_PATH = "/websocket";
 
-	// 一个 ChannelGroup 代表一个直播频道
-	private static Map<Integer, ChannelGroup> channelGroupMap = new ConcurrentHashMap<>();
+//	private static Map<Integer, ChannelGroup> channelGroupMap = new ConcurrentHashMap<>();
 
 	private WebSocketServerHandshaker handshaker;
+//	private Map<String, SimpleChannelInboundHandler<? extends Packet>> handlerMap;
+	private Map<String, SimpleChannelInboundHandler<String>> handlerMap;
+
+	public WebSocketServerHandler() {
+	   handlerMap = new HashMap<>();
+	   handlerMap.put(Command.subscribe, SubscribeHandler.INSTANCE);
+	   handlerMap.put(Command.un_subscribe,UnSubscribeHandler.INSTANCE);
+	}
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, Object msg) {
@@ -84,25 +100,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 			if (channelFuture.isSuccess()) {
 					logger.info(ctx.channel() + " handshake OK, websocket connect OK");
 				}
-//			}
 		}
 	}
 
-/*	private void broadcast(ChannelHandlerContext ctx, WebSocketFrame frame) {
-		if (client.getId() == 0) {
-			Response response = new Response(1001, "没登录不能聊天哦");
-			String msg = new JSONObject(response).toString();
-			ctx.channel().write(new TextWebSocketFrame(msg));
-			return;
-		}
-
-		String request = ((TextWebSocketFrame) frame).text();
-		System.out.println(" 收到 " + ctx.channel() + request);
-
-		Response response = MessageService.sendMessage(client, request);
-		// String msg = new JSONObject(response).toString();
-	}
-*/
 	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
 
 		if (frame instanceof CloseWebSocketFrame) {
@@ -120,7 +120,20 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		}
 		
 		logger.info("msg recv: " + ((TextWebSocketFrame)frame).text());
-//		broadcast(ctx, frame);
+		// 这里调用各个子handler处理
+		// 将msg解为packet
+		//
+		try {
+			String txt = ((TextWebSocketFrame)frame).text();
+			System.out.println("---debug1---"+ txt);
+			JSONObject obj =(JSONObject) JSON.parse(txt);
+//			Packet packet_obj = JSON.parseObject(txt, Packet.class);
+//			logger.info("parse json obj: " + obj.toJSONString());
+//			handlerMap.get(obj.getString("command")).channelRead(ctx, obj);	
+			handlerMap.get(obj.get("command")).channelRead(ctx, txt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
@@ -148,13 +161,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		Channel incoming = ctx.channel();
 		System.out.println("收到" + incoming.remoteAddress() + " 握手请求");
 	}
-
-//	@Override
-//	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-//		if (client != null && channelGroupMap.containsKey(client.getRoomId())) {
-//			channelGroupMap.get(client.getRoomId()).remove(ctx.channel());
-//		}
-//	}
 
 	private static String getWebSocketLocation(FullHttpRequest req) {
 		String location = req.headers().get(HOST) + WEBSOCKET_PATH;
