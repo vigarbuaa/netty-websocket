@@ -16,8 +16,7 @@ public abstract class Packet {
 //    @JSONField(deserialize = false, serialize = false)
 //    private Byte version = 1;
     private String command ;
-
-
+    
 //    @JSONField(serialize = false)
 //    public abstract String getCommand();
 }

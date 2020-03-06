@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.mengkang.cmd.type.Command;
 import net.mengkang.entity.Packet;
 
@@ -12,18 +14,19 @@ import net.mengkang.entity.Packet;
 public class WsMsgHandler extends SimpleChannelInboundHandler<Packet> {
     public static final WsMsgHandler INSTANCE = new WsMsgHandler();
 
-//    private Map<String, SimpleChannelInboundHandler<? extends Packet>> handlerMap;
-    private Map<String, SimpleChannelInboundHandler<String>> handlerMap;
+    private Map<String, SimpleChannelInboundHandler<? extends Packet>> handlerMap  = new ConcurrentHashMap<>();
 
     private WsMsgHandler() {
-        handlerMap = new HashMap<>();
-        handlerMap.put(Command.un_subscribe, SubscribeHandler.INSTANCE);
-        handlerMap.put(Command.subscribe,    UnSubscribeHandler.INSTANCE);
+        handlerMap.put(Command.un_subscribe, UnSubscribeHandler.INSTANCE);
+        handlerMap.put(Command.subscribe,    SubscribeHandler.INSTANCE);
     }
 
 	@Override
 	protected void messageReceived(ChannelHandlerContext ctx, Packet msg) throws Exception {
 		System.out.println("WsMsgHandler recv: " + msg.toString());
+		System.out.println("WsMsgHandler recv: " + msg.getCommand());
+		
+		//加入反序列化逻辑
 		handlerMap.get(msg.getCommand()).channelRead(ctx, msg);
 	}
 }

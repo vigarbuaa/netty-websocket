@@ -35,8 +35,10 @@ import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import net.mengkang.cmd.type.Command;
 import net.mengkang.entity.Packet;
+import net.mengkang.entity.PacketCodec;
 import net.mengkang.handler.SubscribeHandler;
 import net.mengkang.handler.UnSubscribeHandler;
+import net.mengkang.handler.WsMsgHandler;
 
 //@ChannelHandler.Sharable
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
@@ -49,12 +51,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	private WebSocketServerHandshaker handshaker;
 //	private Map<String, SimpleChannelInboundHandler<? extends Packet>> handlerMap;
-	private Map<String, SimpleChannelInboundHandler<String>> handlerMap;
 
 	public WebSocketServerHandler() {
-	   handlerMap = new HashMap<>();
-	   handlerMap.put(Command.subscribe, SubscribeHandler.INSTANCE);
-	   handlerMap.put(Command.un_subscribe,UnSubscribeHandler.INSTANCE);
 	}
 
 	@Override
@@ -120,17 +118,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		}
 		
 		logger.info("msg recv: " + ((TextWebSocketFrame)frame).text());
-		// 这里调用各个子handler处理
-		// 将msg解为packet
-		//
 		try {
 			String txt = ((TextWebSocketFrame)frame).text();
-			System.out.println("---debug1---"+ txt);
-			JSONObject obj =(JSONObject) JSON.parse(txt);
-//			Packet packet_obj = JSON.parseObject(txt, Packet.class);
-//			logger.info("parse json obj: " + obj.toJSONString());
-//			handlerMap.get(obj.getString("command")).channelRead(ctx, obj);	
-			handlerMap.get(obj.get("command")).channelRead(ctx, txt);
+			Packet packet = PacketCodec.INSTANCE.decode(txt);
+//			handlerMap.get(obj.get("command")).channelRead(ctx, txt);
+			WsMsgHandler.INSTANCE.channelRead(ctx, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

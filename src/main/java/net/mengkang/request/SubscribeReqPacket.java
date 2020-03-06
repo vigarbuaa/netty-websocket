@@ -11,10 +11,10 @@ import net.mengkang.entity.Packet;
 @Data
 @NoArgsConstructor
 public class SubscribeReqPacket extends Packet {
-    private String equipment_id;
+    private String eqp_id;
 
     public SubscribeReqPacket(String equipment_id) {
-        this.equipment_id = equipment_id;
+        this.eqp_id = equipment_id;
     }
 
     @Override

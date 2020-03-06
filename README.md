@@ -10,9 +10,9 @@ Run `net.mengkang.WebSocketServer` in IDE, Then you can open the `client.html` i
 
 you can use the script `banchmark.py` in command line.
 
-## demo
-
-https://mengkang.net/demo/websocket/2.html
+## test
+	{"command":"subscribe","eqp_id":'123456'}
+	{"command":"un_subscribe","eqp_id":'123456'}
 
 ## 待加入特性
    - 检查，http只接收upgrade请求  done
@@ -20,7 +20,7 @@ https://mengkang.net/demo/websocket/2.html
    - 区分信息 ：　
             - 命令类: 订阅、取消订阅
             - 回令类: 订阅回令(订阅成功、失败、失败原因{设备不在线、订阅失败等 })、取消订阅(成、败)
-            - 实时推送类，订阅成功后，实时推送
+            - 实时推送类，订阅成功后，实时推送 (按要求进行转发)
             - 查询类：   查询设备列表/查询(走http) 
                                                              是否可以将springboot与netty结合
    			

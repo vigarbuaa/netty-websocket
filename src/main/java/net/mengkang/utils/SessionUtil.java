@@ -58,6 +58,9 @@ public class SessionUtil {
     }
     
     public static void unRegSubscribe(String eqpId,final Channel channel){
+    	if (null == regChannelMap)
+    		return ;
+    	
     	if(regChannelMap.containsKey(eqpId)){
     		List<Channel> channelList = regChannelMap.get(eqpId);
     		channelList.removeIf( elem -> elem.equals(channel));
