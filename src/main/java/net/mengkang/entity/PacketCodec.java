@@ -7,6 +7,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import net.mengkang.cmd.type.Command;
+import net.mengkang.request.Realtime1;
+import net.mengkang.request.Realtime2;
+import net.mengkang.request.Realtime3;
 import net.mengkang.request.SubscribeReqPacket;
 import net.mengkang.request.UnSubscribeReqPacket;
 import net.mengkang.serialize.impl.JSONSerializer;
@@ -20,9 +23,12 @@ public class PacketCodec {
 
     private PacketCodec() {
         packetTypeMap = new HashMap<>();
-//        packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
+//      packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
         packetTypeMap.put(Command.un_subscribe, UnSubscribeReqPacket.class);
         packetTypeMap.put(Command.subscribe,    SubscribeReqPacket.class);
+        packetTypeMap.put(Command.realtime1,    Realtime1.class);
+        packetTypeMap.put(Command.realtime2,    Realtime2.class);
+        packetTypeMap.put(Command.realtime3,    Realtime3.class);
     }
 
 /*    public void encode(ByteBuf byteBuf, Packet packet) {
@@ -45,6 +51,17 @@ public class PacketCodec {
         }
         return null;
     }
+    
+//    public JSONObject decode(String raw) {
+//    	try {
+//			JSONObject json_obj = JSON.parseObject(raw);
+//			return json_obj;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.out.println("parse json error ! in " + raw );
+//			return null;
+//		}
+//    }
 
     private Class<? extends Packet> getRequestType(String command) {
         return packetTypeMap.get(command);

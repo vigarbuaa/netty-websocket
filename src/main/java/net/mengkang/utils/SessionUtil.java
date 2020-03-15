@@ -18,7 +18,12 @@ public class SessionUtil {
     // eqp_id 与 channel 的订阅关系，确定实时消息是否转发
     private static final Map<String, List<Channel>> regChannelMap = new ConcurrentHashMap<>();
 
-    public static void bindSession(Session session, Channel channel) {
+
+    public static Map<String, List<Channel>> getRegchannelmap() {
+		return regChannelMap;
+	}
+
+	public static void bindSession(Session session, Channel channel) {
         eqpIdChannelMap.put(session.getEqp_id(), channel);
         channel.attr(Attributes.SESSION).set(session);
     }
