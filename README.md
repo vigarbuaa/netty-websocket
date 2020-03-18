@@ -19,6 +19,7 @@ you can use the script `banchmark.py` in command line.
 	{"command":"rt3","eqp_id":'xxxx01',  "rotate":2.3}
 	
 ## 待加入特性
+   - 调整日志，不用system.out
    - realtime msg：只解json。
               要求至少有command/type/eqp_id三个字段。 
                                           对json字段的预处理，要写在配置文件中。{上限，下限，单位，描述等}
