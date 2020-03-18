@@ -52,6 +52,7 @@ public class SessionUtil {
     public static void regSubScribe(String eqpId,Channel channel){
     	if(regChannelMap.containsKey(eqpId)){
     		List<Channel> channelList = regChannelMap.get(eqpId);
+    		channelList.add(channel);
     		List<Channel> list2=channelList.stream().distinct().collect(Collectors.<Channel> toList());
     		regChannelMap.put(eqpId, list2);
     	}else

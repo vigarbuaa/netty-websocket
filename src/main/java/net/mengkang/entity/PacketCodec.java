@@ -41,6 +41,7 @@ public class PacketCodec {
 
     public Packet decode(String raw) {
     	JSONObject json_obj = JSON.parseObject(raw);
+    	System.out.println("msg is:" + raw);
     	String command = json_obj.getString("command");
     	
         Class<? extends Packet> requestType = getRequestType(command);

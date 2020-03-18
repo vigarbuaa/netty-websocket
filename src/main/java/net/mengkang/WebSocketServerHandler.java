@@ -119,7 +119,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		}
 		String msg=((TextWebSocketFrame)frame).text();
 		logger.info("msg recv: " + msg);
-		if(null==msg || msg.equals("")){
+		if(null==msg || msg.equals("") || msg.equals("undefined")){
 			logger.info("get msg  null");
 			return;
 		}

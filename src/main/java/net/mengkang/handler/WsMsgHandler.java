@@ -23,7 +23,7 @@ import net.mengkang.utils.SessionUtil;
 @ChannelHandler.Sharable
 public class WsMsgHandler extends SimpleChannelInboundHandler<Packet> {
     public static final WsMsgHandler INSTANCE = new WsMsgHandler();
-    protected static final InternalLogger logger = InternalLoggerFactory.getInstance(SubscribeHandler.class);
+    protected static final InternalLogger logger = InternalLoggerFactory.getInstance(WsMsgHandler.class);
 
     private Map<String, SimpleChannelInboundHandler> handlerMap  = new ConcurrentHashMap<>();
 
@@ -52,6 +52,7 @@ public class WsMsgHandler extends SimpleChannelInboundHandler<Packet> {
 				List<Channel> channel_group = regChannelMap.get(elem);
 				
 				for( Channel channel_elem : channel_group){
+				logger.info("!!!!!===========debug info======================");
 					System.out.println(channel_elem.toString());
 					if(channel_elem.isActive()){
 						channel_elem.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(msg))).addListener(new ChannelFutureListener() {
