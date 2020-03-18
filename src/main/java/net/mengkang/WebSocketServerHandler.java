@@ -102,11 +102,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 	}
 
 	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-
+		//处理关闭链路指令
 		if (frame instanceof CloseWebSocketFrame) {
 			handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
 			return;
 		}
+		//处理ping指令
 		if (frame instanceof PingWebSocketFrame) {
 			ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
 			return;
@@ -116,11 +117,15 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 			throw new UnsupportedOperationException(
 					String.format("%s frame types not supported", frame.getClass().getName()));
 		}
+		String msg=((TextWebSocketFrame)frame).text();
+		logger.info("msg recv: " + msg);
+		if(null==msg || msg.equals("")){
+			logger.info("get msg  null");
+			return;
+		}
 		
-		logger.info("msg recv: " + ((TextWebSocketFrame)frame).text());
 		try {
-			String txt = ((TextWebSocketFrame)frame).text();
-			Packet packet = PacketCodec.INSTANCE.decode(txt);
+			Packet packet = PacketCodec.INSTANCE.decode(msg);
 //			handlerMap.get(obj.get("command")).channelRead(ctx, txt);
 			WsMsgHandler.INSTANCE.channelRead(ctx, packet);
 		} catch (Exception e) {

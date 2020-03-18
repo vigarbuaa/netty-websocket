@@ -11,20 +11,26 @@ Run `net.mengkang.WebSocketServer` in IDE, Then you can open the `client.html` i
 you can use the script `banchmark.py` in command line.
 
 ## test
-	{"command":"subscribe","eqp_id":'xxxx01'}
-	{"command":"subscribe","eqp_id":'xxxx02'}
-	{"command":"un_subscribe","eqp_id":'123456'}
-	{"command":"rt1","eqp_id":'xxxx01', "speed" : 101, "soc":0.3}
-	{"command":"rt2","eqp_id":'xxxx01',  "mileage":2000.3}
-	{"command":"rt3","eqp_id":'xxxx01',  "rotate":2.3}
+	{"command":"subscribe","eqp_id":"xxxx01"}
+	{"command":"subscribe","eqp_id":"xxxx02"}
+	{"command":"un_subscribe","eqp_id":"123456"}
+	{"command":"rt1","eqp_id":"xxxx01", "speed" : 101, "soc":0.3}
+	{"command":"rt2","eqp_id":"xxxx01",  "mileage":2000.3}
+	{"command":"rt3","eqp_id":"xxxx01",  "rotate":2.3}
+	
+	模拟订阅,页面显示订阅的信息。试着用websocket_client写一下。
 	
 ## 待加入特性
-   - 调整日志，不用system.out
-   - realtime msg：只解json。
-              要求至少有command/type/eqp_id三个字段。 
-                                          对json字段的预处理，要写在配置文件中。{上限，下限，单位，描述等}
-   - 检查，http只接收upgrade请求  done
-   - 检查，websocket报文只接收文本，且必须为json done
+   - 前端，发订阅，发取消订阅，连续发模拟消息。
+   - 调整日志，不用system.out  [done]
+   - realtime msg：只解json。 [done]
+   - 模拟连续发送。 [done]
+   
+       -      要求至少有command/type/eqp_id三个字段。 [done]
+                                          对json字段的预处理，要写在配置文件中。{上限，下限，单位，描述等} [先不做]
+   - 检查，http只接收upgrade请求  [done]
+   - 检查，websocket报文只接收文本，且必须为json [done]
+   - 先登入，才允许订阅
    - 区分信息 ：　
             - 命令类: 订阅、取消订阅   done
             - 回令类: 订阅回令(订阅成功、失败、失败原因{设备不在线、订阅失败等 })、取消订阅(成、败)
